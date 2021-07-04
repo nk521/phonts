@@ -1,4 +1,6 @@
 import os
+import shutil
+import glob
 from core import helpers
 
 FONTPATH_ALLUSER = os.getenv('windir') + "\\Fonts"
@@ -8,8 +10,19 @@ FONTPATH_CURRUSER = f"{os.getenv('USERPROFILE')}\\phonts"
 def initFontFolderUser() -> None:
     if not os.path.isdir(FONTPATH_CURRUSER):
         print("Initializing phonts directory!")
-        # for some reasons I cannot delete or edit files (placed in this dir) afterwards
         os.makedirs(FONTPATH_CURRUSER)
+
+
+def deleteFontFiles() -> None:
+    allFonts: set[str] = set(glob.glob(FONTPATH_CURRUSER + "\\*"))
+    fontsInstalled: list = [x[1] for x in helpers.win.enum_key(root=False)]
+    fontsToDelete: set = allFonts - set(fontsInstalled)
+
+    for font in fontsToDelete:
+        try:
+            os.remove(font)
+        except Exception as x:
+            print(x)
 
 
 def installFontUser(fontName: str, fontPath: str) -> bool:
@@ -19,9 +32,7 @@ def installFontUser(fontName: str, fontPath: str) -> bool:
 
     oldFontPath = fontPath
     fontPath = os.path.join(FONTPATH_CURRUSER, fontPath.split("\\")[-1])
-    # print(f"helpers.cross.xcopy(\"{oldFontPath}\", \"{fontPath}\")")
-    helpers.cross.xcopy(oldFontPath, fontPath)
-    # print(fontPath)
+    shutil.copy2(oldFontPath, fontPath)
     r = helpers.win.set_reg(name=fontName, value=fontPath, root=False)
 
     if r:
@@ -33,11 +44,10 @@ def installFontUser(fontName: str, fontPath: str) -> bool:
 
 
 def deleteFontUser(fontName: str) -> bool:
-    if (fontPath := helpers.win.get_reg(name=fontName, root=False)) is None:
+    if (helpers.win.get_reg(name=fontName, root=False)) is None:
         print("Font doesn't exist!")
         return False
 
     helpers.win.del_reg(name=fontName, root=False)
-    os.remove(fontPath)
     print(f"Successfully deleted font {fontName}")
     return True

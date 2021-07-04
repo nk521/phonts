@@ -1,5 +1,6 @@
 import winreg
 import ctypes
+from typing import Union
 
 REG_PATH = "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts"
 
@@ -57,3 +58,26 @@ def del_reg(name: str, root: bool, REG_PATH: str = REG_PATH) -> bool:
 
 def is_admin() -> bool:
     return ctypes.windll.shell32.IsUserAnAdmin()
+
+
+def enum_key(root: bool, REG_PATH: str = REG_PATH) -> Union[list[list[str]], bool]:
+    values_list = []
+    try:
+        registry_key = winreg.OpenKey(
+                                      winreg.HKEY_CURRENT_USER if not root
+                                      else winreg.HKEY_LOCAL_MACHINE,
+                                      REG_PATH,
+                                      0,
+                                      winreg.KEY_READ
+                       )
+        values = winreg.QueryInfoKey(registry_key)[1]
+
+        for value in range(values):
+            temp = winreg.EnumValue(registry_key, value)
+            values_list.append([temp[0], temp[1]])
+
+        winreg.CloseKey(registry_key)
+        return values_list
+
+    except WindowsError:
+        return False
