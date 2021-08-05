@@ -7,7 +7,7 @@ currentPlatform = platform.system()
 
 async def main():
     if currentPlatform == "Windows":
-        await win.initFontFolderUser()
+        await win.initFontsFolderUser()
         fontPath = sys.argv[1]
         fontName = sys.argv[2]
         await win.installFontUser(fontName, fontPath)

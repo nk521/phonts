@@ -6,7 +6,7 @@ REG_PATH = "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts"
 
 
 # https://stackoverflow.com/a/23624136
-async def set_reg(name: str, value: str, root: bool, REG_PATH: str = REG_PATH) -> bool:
+async def setReg(name: str, value: str, root: bool, REG_PATH: str = REG_PATH) -> bool:
     try:
         winreg.CreateKey(winreg.HKEY_CURRENT_USER, REG_PATH)
         registry_key = winreg.OpenKey(
@@ -24,7 +24,7 @@ async def set_reg(name: str, value: str, root: bool, REG_PATH: str = REG_PATH) -
 
 
 # https://stackoverflow.com/a/23624136
-async def get_reg(name: str, root: bool, REG_PATH: str = REG_PATH) -> bool:
+async def getReg(name: str, root: bool, REG_PATH: str = REG_PATH) -> bool:
     try:
         registry_key = winreg.OpenKey(
                                       winreg.HKEY_CURRENT_USER if not root
@@ -40,7 +40,7 @@ async def get_reg(name: str, root: bool, REG_PATH: str = REG_PATH) -> bool:
         return None
 
 
-async def del_reg(name: str, root: bool, REG_PATH: str = REG_PATH) -> bool:
+async def delReg(name: str, root: bool, REG_PATH: str = REG_PATH) -> bool:
     try:
         registry_key = winreg.OpenKey(
                                       winreg.HKEY_CURRENT_USER if not root
@@ -56,11 +56,11 @@ async def del_reg(name: str, root: bool, REG_PATH: str = REG_PATH) -> bool:
         return False
 
 
-async def is_admin() -> bool:
+async def isAdmin() -> bool:
     return ctypes.windll.shell32.IsUserAnAdmin()
 
 
-async def enum_key(root: bool, REG_PATH: str = REG_PATH) -> Union[list[list[str]], bool]:
+async def enumKeyReg(root: bool, REG_PATH: str = REG_PATH) -> Union[list[list[str]], bool]:
     values_list = []
     try:
         registry_key = winreg.OpenKey(
